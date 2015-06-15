@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu
+  xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:icon="@drawable/ic_save" android:id="@id/menu_save" android:orderInCategory="100" android:title="@string/str_baroInterval" android:showAsAction="never" />
+    <item android:icon="@drawable/ic_cancel" android:id="@id/menu_cancel" android:orderInCategory="100" android:title="@string/str_menu_cancel" android:showAsAction="never" />
+</menu>

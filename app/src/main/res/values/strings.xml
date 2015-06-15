@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="str_tracking_msg_chekBox">"don't show this message again"</string>
+    <string name="tracking_msg_buttonOK">OK</string>
+    <string name="tracking_msg_buttonDownload">Download</string>
+    <string name="tracking_msg_titel">gps tracking notification</string>
+    <string name="tracking_msg_text">"For activate gps tracking you need to install GPS tracking app.
+Click \"Download\" for install gps tracking or \"Ok\" to continue."</string>
+    <string name="app_name">Barometric variometer</string>
+    <string name="menu_config">Config View</string>
+    <string name="menu_tracking">Tracking</string>
+    <string name="menu_settings">Settings</string>
+    <string name="menu_audio">Audio</string>
+    <string name="menu_exit">Exit</string>
+    <string name="str_menu_save">Save</string>
+    <string name="str_menu_defaults">Use defaults</string>
+    <string name="str_menu_cancel">Cancel</string>
+    <string name="title_activity_view">TalKing Variometer</string>
+    <string name="text_switch">Service</string>
+    <string name="text_switch2">Logger</string>
+    <string name="text_a1">A1 m</string>
+    <string name="text_a2">A2 m</string>
+    <string name="text_a3">Sp m/s</string>
+    <string name="text_a4">FL ft</string>
+    <string name="high_a1">400</string>
+    <string name="high_a2">10</string>
+    <string name="high_a3">-2</string>
+    <string name="high_a4">1200</string>
+    <string name="service_started">Variometer service</string>
+    <string name="title_activity_calibration">Calibration</string>
+    <string name="title_activity_settings">Settings</string>
+    <string name="title_activity_sensor">Sensor Settings</string>
+    <string name="title_lift_header">Thermal lift Settings</string>
+    <string name="title_airspaces_header">Airspaces</string>
+    <string name="text_load_airspace">load airsapce from SD Card</string>
+    <string name="str_liftBarrier">"Thermal lift
+barrier (m/s)"</string>
+    <string name="str_liftMaxDist">"Thermal lift max
+dist. (m)"</string>
+    <string name="title_activity_audio">Audio Settings</string>
+    <string name="airfieldQfe">"airfield elevation 
+hPa QFE"</string>
+    <string name="airfieldQnh">"airfield adjusted 
+to sea level QNH"</string>
+    <string name="airfieldHeight">airfield height m</string>
+    <string name="str_setBarometerQfeCheck">use barometer pressure for QFE</string>
+    <string name="str_useAcceleratorSensor">use accelerator sensor</string>
+    <string name="str_useKalmanFilter">use kalman filter</string>
+    <string name="str_useStorageFilter">use storage filter</string>
+    <string name="str_baroInterval">"time for get
+pressure in ms"</string>
+    <string name="str_kalmanDumping">"damping
+level (1 to 100)"</string>
+    <string name="str_damping">"damping
+level (1 to 10)"</string>
+    <string name="acceInterval">"calib. time for 
+accelerator in ms"</string>
+    <string name="upFreqTextBox">Up frequency Hz</string>
+    <string name="upMinTextBox">Min up speed m/s</string>
+    <string name="upMaxTextBox">Up speed range m/s</string>
+    <string name="dwFreqTextBox">Down frequency Hz</string>
+    <string name="dwMinTextBox">Min down speed m/s</string>
+    <string name="dwMaxTextBox">Down speed range m/s</string>
+    <string name="upFreqTextBoxVal">1000</string>
+    <string name="upMinTextBoxVal">0.5</string>
+    <string name="upRangeTextBoxVal">4.0</string>
+    <string name="dwFreqTextBoxVal">400</string>
+    <string name="dwMinTextBoxVal">2.0</string>
+    <string name="dwRangeTextBoxVal">4.0</string>
+    <string name="headerEmulationText1">For audio simulation, touch button</string>
+    <string name="headerEmulationText2">For audio simulation, place start the service</string>
+    <string name="freqTomRadioTextBox">Tone radio-control(Hz)</string>
+</resources>

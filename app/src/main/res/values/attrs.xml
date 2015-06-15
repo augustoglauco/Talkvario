@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>   
+    <declare-styleable name="TextBox">
+  		<attr name="value" format="string" />
+  		<attr name="valueTextSize" format="dimension" />
+	</declare-styleable>
+
+    <declare-styleable name="ImageButton">
+  		<attr name="drawableOff" format="reference" />
+    	<attr name="drawableOn" format="reference" />
+    	<attr name="drawableDown" format="reference" />
+	</declare-styleable>
+
+    <declare-styleable name="HeaderView">
+  		    <attr name="headerColor" format="reference" />
+    		<attr name="headerTitel" format="string" />
+	</declare-styleable>
+          
+</resources>

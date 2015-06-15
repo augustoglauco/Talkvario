@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout android:gravity="center_vertical" android:orientation="horizontal" android:id="@id/RelativeLayout1" android:layout_width="fill_parent" android:layout_height="fill_parent" android:columnCount="2"
+  xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:app="http://schemas.android.com/apk/res/de.oganisyan.paraglidervario">
+    <de.oganisyan.paraglidervario.widgets.HorizontalScrollView android:id="@id/horizontalScrollView1" android:layout_width="wrap_content" android:layout_height="wrap_content" />
+    <Switch android:textSize="16.0sp" android:id="@id/switchService" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="10.0dip" android:layout_marginRight="10.0dip" android:text="@string/text_switch" android:layout_alignParentTop="true" android:layout_alignParentRight="true" />
+    <de.oganisyan.paraglidervario.widgets.ImageButton android:id="@id/button" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_toLeftOf="@id/switchService" android:layout_alignBaseline="@id/switchService" android:layout_alignBottom="@id/switchService" app:drawableOff="@drawable/ic_beep_off" app:drawableOn="@drawable/ic_beep_on" />
+    <de.oganisyan.paraglidervario.widgets.ImageButton android:id="@id/buttonSat" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_alignBottom="@id/switchService" android:layout_alignParentLeft="true" app:drawableOff="@drawable/tracking_off" app:drawableOn="@drawable/tracking_on" />
+</RelativeLayout>

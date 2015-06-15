@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="de.oganisyan.paraglidervario"
+    android:versionCode="01"
+    android:versionName="1.00" >
+
+    <uses-sdk android:minSdkVersion="17" android:targetSdkVersion="20" />
+    
+    <uses-feature android:name="android.hardware.sensor.barometer" android:required="true" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.RECORD_AUDIO"/>
+    <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS"/>
+
+    <application
+        android:allowBackup="true"
+        android:icon="@drawable/ic_launcher"
+        android:label="@string/app_name"
+        android:theme="@android:style/Theme.Holo" >
+               
+        <activity 
+            android:label="@string/title_activity_view" 
+            android:name="de.oganisyan.paraglidervario.VarioActivity" 
+            android:launchMode="singleInstance" 
+            android:screenOrientation="portrait" android:theme="@android:style/Theme.Holo">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        
+        <activity 
+            android:label="@string/title_activity_settings" 
+            android:name="de.oganisyan.paraglidervario.SettingsActivity" 
+            android:launchMode="singleInstance" 
+            android:screenOrientation="portrait" android:theme="@android:style/Theme.Holo">
+            <intent-filter>
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="file" />
+                <data android:mimeType="application/*" />
+                <data android:host="*" />
+                <data android:pathPattern=".*\\.las" />
+            </intent-filter>
+        </activity>
+        
+        <activity 
+            android:label="@string/title_activity_audio" 
+            android:name="de.oganisyan.paraglidervario.AudioActivity" 
+            android:launchMode="singleInstance" 
+            android:screenOrientation="portrait" android:theme="@android:style/Theme.Holo"/>
+        
+       <service android:name="de.oganisyan.paraglidervario.VarioService" />
+       <service android:name="de.oganisyan.paraglidervario.Speech" />               
+       <service android:name="de.oganisyan.paraglidervario.MyService" />
+       
+    </application>
+
+</manifest>

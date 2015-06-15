@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout android:background="@color/Black" android:layout_width="wrap_content" android:layout_height="200.0dip"
+  xmlns:android="http://schemas.android.com/apk/res/android">
+    <TextView android:textColor="#ffffffff" android:id="@id/text" android:layout_width="fill_parent" android:layout_height="wrap_content" android:text="@string/tracking_msg_text" android:layout_toRightOf="@id/image" android:layout_above="@id/tracking_msg_chekBox" android:layout_alignTop="@id/image" />
+    <RelativeLayout android:id="@id/buttonLayout" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginBottom="10.0dip" android:layout_alignParentLeft="true" android:layout_alignParentRight="true" android:layout_alignParentBottom="true">
+        <Button android:textSize="12.0sp" android:id="@id/dialogButtonOK" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginRight="10.0dip" android:text="@string/tracking_msg_buttonOK" android:layout_alignParentTop="true" android:layout_alignParentRight="true" />
+        <Button android:textSize="12.0sp" android:id="@id/dialogButtonStore" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginRight="10.0dip" android:text="@string/tracking_msg_buttonDownload" android:layout_toLeftOf="@id/dialogButtonOK" android:layout_alignParentTop="true" />
+    </RelativeLayout>
+    <CheckBox android:textSize="12.0sp" android:id="@id/tracking_msg_chekBox" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/str_tracking_msg_chekBox" android:layout_above="@id/buttonLayout" android:layout_alignLeft="@id/image" android:layout_alignParentRight="true" />
+    <ImageView android:id="@id/image" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginLeft="20.0dip" android:layout_marginTop="23.0dip" android:src="@drawable/ic_tracking" android:layout_alignParentLeft="true" android:layout_alignParentTop="true" android:contentDescription="TODO"/>
+</RelativeLayout>

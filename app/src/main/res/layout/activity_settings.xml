@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView android:textSize="12.0sp" android:orientation="vertical" android:id="@id/RelativeLayout1" android:layout_width="fill_parent" android:layout_height="fill_parent"
+  xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:app="http://schemas.android.com/apk/res-auto">
+    <LinearLayout android:orientation="vertical" android:layout_width="fill_parent" android:layout_height="wrap_content">
+        <de.oganisyan.paraglidervario.widgets.HeaderView android:layout_width="fill_parent" android:layout_height="fill_parent" app:headerColor="@color/Gray" app:headerTitel="@string/title_activity_calibration">
+            <LinearLayout android:layout_width="fill_parent" android:layout_height="fill_parent">
+                <TextView android:gravity="bottom" android:id="@id/airfieldHeightText" android:layout_width="fill_parent" android:layout_height="fill_parent" android:text="@string/airfieldHeight" android:layout_weight="0.8" />
+                <EditText android:id="@id/airfieldHeightEdit" android:layout_width="150.0dip" android:layout_height="fill_parent" android:ems="10" android:layout_weight="0.2" android:inputType="number" />
+            </LinearLayout>
+            <CheckBox android:id="@id/setBarometerQfeCheck" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/str_setBarometerQfeCheck" android:layout_below="@id/airfieldHeightEdit" android:layout_alignParentLeft="true" />
+            <LinearLayout android:layout_width="fill_parent" android:layout_height="fill_parent">
+                <TextView android:gravity="bottom" android:id="@id/airfieldQfeText" android:layout_width="fill_parent" android:layout_height="fill_parent" android:text="@string/airfieldQfe" android:layout_weight="0.8" />
+                <EditText android:id="@id/airfieldQfeEdit" android:layout_width="150.0dip" android:layout_height="fill_parent" android:ems="10" android:layout_weight="0.2" android:inputType="numberDecimal" />
+            </LinearLayout>
+            <LinearLayout android:layout_width="fill_parent" android:layout_height="fill_parent">
+                <TextView android:gravity="bottom" android:id="@id/airfieldQnhText" android:layout_width="fill_parent" android:layout_height="fill_parent" android:text="@string/airfieldQnh" android:layout_weight="0.8" />
+                <EditText android:id="@id/airfieldQnhEdit" android:layout_width="150.0dip" android:layout_height="fill_parent" android:ems="10" android:layout_weight="0.2" android:inputType="numberDecimal" />
+            </LinearLayout>
+        </de.oganisyan.paraglidervario.widgets.HeaderView>
+        <de.oganisyan.paraglidervario.widgets.HeaderView android:layout_width="fill_parent" android:layout_height="fill_parent" android:layout_marginTop="22.0dip" app:headerColor="@color/Gray" app:headerTitel="@string/title_airspaces_header">
+            <LinearLayout android:id="@id/loadAirspaceContent" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_below="@id/airspaceHeaderText" android:layout_alignParentLeft="true" android:layout_alignParentRight="true">
+                <TextView android:id="@id/textLoadAirspace" android:layout_width="0.0dip" android:layout_height="wrap_content" android:text="@string/text_load_airspace" android:layout_weight="0.94" />
+                <Button android:id="@id/buttonLoadAirspace" android:background="@drawable/ic_load" android:layout_width="wrap_content" android:layout_height="wrap_content" />
+            </LinearLayout>
+            <LinearLayout android:orientation="vertical" android:id="@id/airspaceListContent" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_below="@id/loadAirspaceContent" android:layout_alignParentLeft="true" android:layout_alignParentRight="true" />
+        </de.oganisyan.paraglidervario.widgets.HeaderView>
+        <de.oganisyan.paraglidervario.widgets.HeaderView android:layout_width="fill_parent" android:layout_height="fill_parent" android:layout_marginTop="22.0dip" app:headerColor="@color/Gray" app:headerTitel="@string/title_lift_header">
+            <LinearLayout android:layout_width="fill_parent" android:layout_height="fill_parent">
+                <TextView android:gravity="bottom" android:id="@id/liftBarrier" android:layout_width="fill_parent" android:layout_height="fill_parent" android:text="@string/str_liftBarrier" android:layout_weight="0.8" />
+                <EditText android:id="@id/liftBarrierEdit" android:layout_width="150.0dip" android:layout_height="fill_parent" android:ems="10" android:layout_weight="0.2" android:inputType="numberDecimal" />
+            </LinearLayout>
+            <LinearLayout android:layout_width="fill_parent" android:layout_height="fill_parent">
+                <TextView android:gravity="bottom" android:id="@id/liftMaxDist" android:layout_width="fill_parent" android:layout_height="fill_parent" android:text="@string/str_liftMaxDist" android:layout_weight="0.8" />
+                <EditText android:id="@id/liftMaxDistEdit" android:layout_width="150.0dip" android:layout_height="fill_parent" android:ems="10" android:layout_weight="0.2" android:inputType="number" />
+            </LinearLayout>
+        </de.oganisyan.paraglidervario.widgets.HeaderView>
+        <de.oganisyan.paraglidervario.widgets.HeaderView android:layout_width="fill_parent" android:layout_height="fill_parent" android:layout_marginTop="22.0dip" app:headerColor="@color/Gray" app:headerTitel="@string/title_activity_calibration">
+            <LinearLayout android:layout_width="fill_parent" android:layout_height="fill_parent">
+                <TextView android:gravity="bottom" android:id="@id/baroInterval" android:layout_width="fill_parent" android:layout_height="fill_parent" android:text="@string/str_baroInterval" android:layout_weight="0.8" />
+                <EditText android:id="@id/baroIntervalEdit" android:layout_width="150.0dip" android:layout_height="fill_parent" android:ems="10" android:layout_weight="0.2" android:inputType="number" />
+            </LinearLayout>
+            <CheckBox android:id="@id/useKalmanFilter" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/str_useKalmanFilter" android:layout_alignParentLeft="true" android:layout_alignParentRight="true" />
+            <LinearLayout android:layout_width="fill_parent" android:layout_height="fill_parent">
+                <TextView android:gravity="bottom" android:id="@id/kalmanDumping" android:layout_width="fill_parent" android:layout_height="fill_parent" android:text="@string/str_kalmanDumping" android:layout_weight="0.8" />
+                <EditText android:id="@id/kalmanDumpingEdit" android:layout_width="150.0dip" android:layout_height="fill_parent" android:ems="10" android:layout_weight="0.2" android:inputType="number" />
+            </LinearLayout>
+            <CheckBox android:id="@id/useStorageFilter" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/str_useStorageFilter" android:layout_alignParentLeft="true" android:layout_alignParentRight="true" />
+            <LinearLayout android:layout_width="fill_parent" android:layout_height="fill_parent">
+                <TextView android:gravity="bottom" android:id="@id/damping" android:layout_width="fill_parent" android:layout_height="fill_parent" android:text="@string/str_damping" android:layout_weight="0.8" />
+                <EditText android:id="@id/dampingEdit" android:layout_width="150.0dip" android:layout_height="fill_parent" android:ems="10" android:layout_weight="0.2" android:inputType="number" />
+            </LinearLayout>
+            <CheckBox android:id="@id/useAcceleratorSensor" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/str_useAcceleratorSensor" android:layout_alignParentLeft="true" android:layout_alignParentRight="true" />
+            <LinearLayout android:layout_width="fill_parent" android:layout_height="fill_parent">
+                <TextView android:gravity="bottom" android:id="@id/acceleratorCalibTimeText" android:layout_width="fill_parent" android:layout_height="fill_parent" android:text="@string/acceInterval" android:layout_weight="0.8" />
+                <EditText android:id="@id/acceleratorCalibEdit" android:layout_width="150.0dip" android:layout_height="fill_parent" android:ems="10" android:layout_weight="0.2" android:inputType="number" />
+            </LinearLayout>
+        </de.oganisyan.paraglidervario.widgets.HeaderView>
+        <de.oganisyan.paraglidervario.widgets.HeaderView android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginTop="22.0dip" app:headerColor="@color/Gray" app:headerTitel="@string/title_activity_audio">
+            <LinearLayout android:orientation="horizontal" android:layout_width="wrap_content" android:layout_height="wrap_content">
+                <LinearLayout android:orientation="vertical" android:layout_width="wrap_content" android:layout_height="wrap_content">
+                    <de.oganisyan.paraglidervario.widgets.TextBox android:id="@id/upFreqBox" android:layout_width="176.0dip" android:layout_height="wrap_content" android:text="@string/upFreqTextBox" app:value="@string/upFreqTextBoxVal" app:valueTextSize="12.0dip" />
+                    <de.oganisyan.paraglidervario.widgets.TextBox android:id="@id/upMinBarrierBox" android:layout_width="fill_parent" android:layout_height="wrap_content" android:text="@string/upMinTextBox" app:value="@string/upMinTextBoxVal" app:valueTextSize="12.0dip" />
+                    <de.oganisyan.paraglidervario.widgets.TextBox android:id="@id/upRangeBarrierBox" android:layout_width="fill_parent" android:layout_height="wrap_content" android:text="@string/upMaxTextBox" app:value="@string/upRangeTextBoxVal" app:valueTextSize="12.0dip" />
+
+                    <TextView
+                        android:gravity="bottom"
+                        android:id="@+id/freqTomRadioTextBox"
+                        android:layout_width="fill_parent"
+                        android:layout_height="38dp"
+                        android:text="@string/freqTomRadioTextBox"
+                        android:layout_gravity="right" />
+
+                </LinearLayout>
+                <Space android:layout_width="20.0dip" android:layout_height="fill_parent" />
+
+                <LinearLayout android:orientation="vertical" android:layout_width="fill_parent" android:layout_height="wrap_content">
+
+                    <de.oganisyan.paraglidervario.widgets.TextBox android:id="@id/dwFreqBox" android:layout_width="fill_parent" android:layout_height="wrap_content" android:text="@string/dwFreqTextBox" app:value="@string/dwFreqTextBoxVal" app:valueTextSize="12.0dip" />
+                    <de.oganisyan.paraglidervario.widgets.TextBox android:id="@id/dwMinBarrierBox" android:layout_width="fill_parent" android:layout_height="wrap_content" android:text="@string/dwMinTextBox" app:value="@string/dwMinTextBoxVal" app:valueTextSize="12.0dip" />
+                    <de.oganisyan.paraglidervario.widgets.TextBox android:id="@id/dwRangeBarrierBox" android:layout_width="fill_parent" android:layout_height="wrap_content" android:text="@string/dwMaxTextBox" app:value="@string/dwRangeTextBoxVal" app:valueTextSize="12.0dip" />
+
+                    <EditText
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/freqTomRadioEditBox"
+                        android:inputType="numberDecimal" />
+
+                </LinearLayout>
+
+            </LinearLayout>
+        </de.oganisyan.paraglidervario.widgets.HeaderView>
+
+    </LinearLayout>
+</ScrollView>

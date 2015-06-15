@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout android:orientation="vertical" android:id="@id/LinearLayout1" android:layout_width="fill_parent" android:layout_height="fill_parent" android:minWidth="400.0sp"
+  xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:app="http://schemas.android.com/apk/res-auto">
+    <TextView android:id="@id/headerAudioSetting" android:background="@color/Gray" android:layout_width="fill_parent" android:layout_height="wrap_content" android:text="@string/title_activity_audio" />
+    <TableLayout android:id="@id/TableLayout1" android:layout_width="fill_parent" android:layout_height="wrap_content">
+        <TableRow android:layout_gravity="center_horizontal" android:id="@id/tableRow1" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_weight="1.0">
+            <de.oganisyan.paraglidervario.widgets.TextBox android:textSize="18.0sp" android:id="@id/textBox01" android:layout_width="fill_parent" android:layout_height="wrap_content" android:minHeight="32.0dip" android:text="@string/upFreqTextBox" app:value="@string/upFreqTextBoxVal" app:valueTextSize="12.0sp" />
+            <SeekBar android:id="@id/seekBar01" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_weight="1.0" />
+        </TableRow>
+        <TableRow android:layout_gravity="center_horizontal" android:id="@id/tableRow2" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_weight="1.0">
+            <de.oganisyan.paraglidervario.widgets.TextBox android:textSize="18.0sp" android:id="@id/textBox02" android:layout_width="fill_parent" android:layout_height="wrap_content" android:text="@string/upMinTextBox" app:value="@string/upMinTextBoxVal" app:valueTextSize="12.0sp" />
+            <SeekBar android:id="@id/seekBar02" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_weight="1.0" />
+        </TableRow>
+        <TableRow android:layout_gravity="center_vertical" android:id="@id/tableRow3" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_weight="1.0">
+            <de.oganisyan.paraglidervario.widgets.TextBox android:textSize="18.0sp" android:id="@id/textBox03" android:layout_width="fill_parent" android:layout_height="wrap_content" android:text="@string/upMaxTextBox" app:value="@string/upRangeTextBoxVal" app:valueTextSize="12.0dip" />
+            <SeekBar android:id="@id/seekBar03" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_weight="1.0" />
+        </TableRow>
+        <TableRow android:layout_gravity="center_vertical" android:id="@id/tableRow4" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_weight="1.0">
+            <de.oganisyan.paraglidervario.widgets.TextBox android:textSize="18.0sp" android:id="@id/textBox04" android:layout_width="fill_parent" android:layout_height="wrap_content" android:text="@string/dwFreqTextBox" app:value="@string/dwFreqTextBoxVal" app:valueTextSize="12.0dip" />
+            <SeekBar android:id="@id/seekBar04" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_weight="1.0" />
+        </TableRow>
+        <TableRow android:layout_gravity="center_vertical" android:id="@id/tableRow5" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_weight="1.0">
+            <de.oganisyan.paraglidervario.widgets.TextBox android:textSize="18.0sp" android:id="@id/textBox05" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/dwMinTextBox" app:value="@string/dwMinTextBoxVal" app:valueTextSize="12.0dip" />
+            <SeekBar android:id="@id/seekBar05" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_weight="1.0" />
+        </TableRow>
+        <TableRow android:layout_gravity="center_vertical" android:id="@id/tableRow6" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_weight="1.0">
+            <de.oganisyan.paraglidervario.widgets.TextBox android:textSize="18.0sp" android:id="@id/textBox06" android:layout_width="fill_parent" android:layout_height="wrap_content" android:text="@string/dwMaxTextBox" app:value="@string/dwRangeTextBoxVal" app:valueTextSize="12.0dip" />
+            <SeekBar android:id="@id/seekBar06" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_weight="1.0" />
+        </TableRow>
+    </TableLayout>
+    <de.oganisyan.paraglidervario.widgets.TextBox android:textSize="16.0sp" android:id="@id/headerEmulationText" android:layout_width="fill_parent" android:layout_height="wrap_content" android:text="@string/headerEmulationText1" app:valueTextSize="12.0dip" />
+    <SeekBar android:id="@id/emulationSeekBar" android:layout_width="fill_parent" android:layout_height="wrap_content" />
+</LinearLayout>
