@@ -50,7 +50,6 @@ public class VarioActivity extends Activity implements VarioIfc
 	private static String TAG = "VarioActivity";
 	private static int[] $SWITCH_TABLE$de$oganisyan$paraglidervario$VarioActivity$SERVICE_TYPE;
 
-
 	static int[] $SWITCH_TABLE$de$oganisyan$paraglidervario$VarioActivity$SERVICE_TYPE() {
 		int[] $switch_TABLE$de$oganisyan$paraglidervario$VarioActivity$SERVICE_TYPE = VarioActivity.$SWITCH_TABLE$de$oganisyan$paraglidervario$VarioActivity$SERVICE_TYPE;
 		if ($switch_TABLE$de$oganisyan$paraglidervario$VarioActivity$SERVICE_TYPE == null) {
@@ -271,9 +270,7 @@ public class VarioActivity extends Activity implements VarioIfc
 		}
 	}
 
-	public void onBackPressed() {
-		super.openOptionsMenu();
-	}
+
 
 	public void onCreate(final Bundle bundle) {
 		super.onCreate(bundle);
@@ -316,30 +313,6 @@ public class VarioActivity extends Activity implements VarioIfc
 		this.getMenuInflater().inflate(R.menu.activity_view_menu, menu);
 		this.setConfigerMode(false);
 		return true;
-	}
-
-	protected void onDestroy() {
-		if (this.orentationHelper != null) {
-			this.orentationHelper.destroy();
-		}
-		this.saveSettings();
-		while (true) {
-			try {
-				this.doUnBindService();
-				super.onDestroy();
-				if (this.model != null) {
-					this.model.destroy();
-				}
-				//if (this.mapModel != null) {
-				//	this.mapModel.destroy();
-				//}
-			}
-			catch (Throwable t) {
-				Log.e("MainActivity", "Failed to unbind from the service", t);
-				continue;
-			}
-			break;
-		}
 	}
 
 	public boolean onOptionsItemSelected(final MenuItem menuItem) {
@@ -388,6 +361,10 @@ public class VarioActivity extends Activity implements VarioIfc
 		return onOptionsItemSelected;
 	}
 
+	public void onBackPressed() {
+		super.openOptionsMenu();
+	}
+
 	public void onOrentationChanged(final float n) {
 		if (this.model != null) {
 			this.model.setOrentation(n);
@@ -425,6 +402,30 @@ public class VarioActivity extends Activity implements VarioIfc
 		ed.commit();
 	}
 
+	protected void onDestroy() {
+		if (this.orentationHelper != null) {
+			this.orentationHelper.destroy();
+		}
+		this.saveSettings();
+		while (true) {
+			try {
+				this.doUnBindService();
+				super.onDestroy();
+				if (this.model != null) {
+					this.model.destroy();
+				}
+				//if (this.mapModel != null) {
+				//	this.mapModel.destroy();
+				//}
+			}
+			catch (Throwable t) {
+				Log.e("MainActivity", "Failed to unbind from the service", t);
+				continue;
+			}
+			break;
+		}
+	}
+
 	enum SERVICE_TYPE
 	{
 		TRACKING("TRACKING", 1),
@@ -451,17 +452,18 @@ public class VarioActivity extends Activity implements VarioIfc
 				if (codTecla.equals("66")) {
 					return true;
 				}
-				else if (codTecla.equals("24"))
-					 	return true;
+				else if (codTecla.equals("24")){
+					this.iServiceController.fala(Speech.tom); // Tom
+					return true;
+				}
 			}
 			else if ((this.iServiceController != null) && (event.getAction()== KeyEvent.ACTION_UP)) {
 				if (codTecla.equals("66")) {
-					this.iServiceController.fala(0); // SayIt
+					this.iServiceController.fala(Speech.dadosVoo); // SayIt
 					return true;
 				}
 				else if (codTecla.equals("24"))
 				{
-					this.iServiceController.fala(1); // Play Tom
 					return true;
 				}
 			}

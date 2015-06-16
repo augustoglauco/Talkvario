@@ -29,12 +29,14 @@ public class Speech extends Service implements OnInitListener {
     private boolean paraBluetooth = false;
     private AudioManager audioManager;
     private AudioTrack audioTrack;
-    private final int duration = 1; // seconds
+    private final int duration = 200; // miliseconds
     private final int sampleRate = 44100;
-    private final int numSamples = duration * sampleRate;
+    private final int numSamples = duration/1000 * sampleRate;
     private final double sample[] = new double[numSamples];
     private float freqOfTone = 19000; // hz
     private final byte generatedSnd[] = new byte[2 * numSamples];
+    public static final int dadosVoo = 0;
+    public static final int tom = 1;
 
     public void setParaBluetooth(boolean paraBluetooth) {
         this.paraBluetooth = paraBluetooth;
@@ -135,19 +137,8 @@ public class Speech extends Service implements OnInitListener {
 		HashMap<String, String> myHashAlarm = new HashMap<String, String>();
 		myHashAlarm.put(TextToSpeech.Engine.KEY_PARAM_STREAM, String.valueOf(audioManagerMode));
 		myHashAlarm.put(TextToSpeech.Engine.KEY_PARAM_UTTERANCE_ID, "FINISHED PLAYING");
-		audioManager.setStreamMute(AudioManager.STREAM_MUSIC, true);
 
-        if (audioManager.isBluetoothA2dpOn()){
-            if (paraBluetooth) {
-                audioManager.setBluetoothScoOn(true);
-                audioManager.startBluetoothSco();
-            }
-            else {
-                audioManager.setBluetoothScoOn(false);
-                audioManager.stopBluetoothSco();
-            }
-        }
-
+        controleAudioManager(0);
 		this.setFimFala(false);
 		mTts.speak(str, modo, myHashAlarm);
 	}
@@ -182,18 +173,7 @@ public class Speech extends Service implements OnInitListener {
 
     private void playTone(){
 
-        audioManager.setStreamMute(AudioManager.STREAM_MUSIC, true);
-
-        if (audioManager.isBluetoothA2dpOn()){
-            if (paraBluetooth) {
-                audioManager.setBluetoothScoOn(true);
-                audioManager.startBluetoothSco();
-            }
-            else {
-                audioManager.setBluetoothScoOn(false);
-                audioManager.stopBluetoothSco();
-            }
-        }
+        controleAudioManager(0);
 
         try {
             if (audioTrack == null) {
@@ -211,17 +191,7 @@ public class Speech extends Service implements OnInitListener {
 
                 @Override
                 public void onMarkerReached(AudioTrack track) {
-
-                    if (audioManager.isBluetoothA2dpOn()) {
-                        audioManager.setBluetoothScoOn(false);
-                        audioManager.stopBluetoothSco();
-                    }
-
-                    audioManager.setBluetoothScoOn(false);
-                    audioManager.stopBluetoothSco();
-
-                    //audioTrack.release();
-                    audioManager.setStreamMute(AudioManager.STREAM_MUSIC, false);
+                    controleAudioManager(1);
                     setFimFala(true);
                 }
             });
@@ -238,6 +208,42 @@ public class Speech extends Service implements OnInitListener {
     public void gerarTom() {
         genTone();
         playTone();
+    }
+
+    private void controleAudioManager(int controle){
+
+        switch (controle) {
+            case 0: // entrada para falar algo
+                    // diminuir ou para media
+                    // verificar se esta setado o direcionamento entre speaker ou BTH
+                audioManager.setStreamMute(AudioManager.STREAM_MUSIC, true);
+                if (audioManager.isBluetoothA2dpOn()){
+                    if (paraBluetooth) {
+                        audioManager.setBluetoothScoOn(true);
+                        audioManager.startBluetoothSco();
+                    }
+                    else {
+                        audioManager.setBluetoothScoOn(false);
+                        audioManager.stopBluetoothSco();
+                    }
+                }
+                break;
+
+            case 1: // saida após falar algo
+                    // aumentar ou prosseguir media
+                    // verificar se esta setado o direcionamento entre speaker ou BTH
+
+                if (audioManager.isBluetoothA2dpOn()) {
+                    audioManager.setBluetoothScoOn(false);
+                    audioManager.stopBluetoothSco();
+                }
+
+                audioManager.setStreamMute(AudioManager.STREAM_MUSIC, false);
+                break;
+            default:
+
+        }
+
     }
 
 }
