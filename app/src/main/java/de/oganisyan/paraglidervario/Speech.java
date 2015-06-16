@@ -13,6 +13,7 @@ import android.speech.tts.TextToSpeech;
 import android.speech.tts.TextToSpeech.OnInitListener;
 import android.speech.tts.UtteranceProgressListener;
 import android.util.Log;
+
 import java.util.HashMap;
 import java.util.Locale;
 
@@ -24,7 +25,7 @@ public class Speech extends Service implements OnInitListener {
 	private TextToSpeech mTts;
 	private static final String TAG="TTSService";
 	private final IBinder mBinder = new LocalBinder();
-	private boolean fimFala = true;
+	public static boolean fimFala = true;
 	private int audioManagerMode = AudioManager.STREAM_MUSIC;
     private boolean paraBluetooth = false;
     private AudioManager audioManager;
@@ -35,7 +36,7 @@ public class Speech extends Service implements OnInitListener {
         this.audioContinuo = audioContinuo;
     }
 
-    private final int duration = 1; // seconds
+    private final int duration = 2; // seconds
     private final int sampleRate = 44100;
     private final int numSamples = duration * sampleRate;
     private final double sample[] = new double[numSamples];
@@ -60,8 +61,8 @@ public class Speech extends Service implements OnInitListener {
 		return fimFala;
 	}
 
-	public void setFimFala(boolean fimFala) {
-		this.fimFala = fimFala;
+	public void setFimFala(boolean mFimFala) {
+		fimFala = mFimFala;
 	}
 
 	@Override
@@ -177,18 +178,18 @@ public class Speech extends Service implements OnInitListener {
 
     public void gerarTom() {
         // Use a new tread as this can take a while
-        final Thread thread = new Thread(new Runnable() {
-            public void run() {
+       // final Thread thread = new Thread(new Runnable() {
+        //    public void run() {
                 genTone();
-                handler.post(new Runnable() {
+               // handler.post(new Runnable() {
 
-                    public void run() {
+                    //public void run() {
                         playSound();
-                    }
-                });
-            }
-        });
-        thread.start();
+                   // }
+               // });
+           // }
+       // });
+       // thread.start();
     }
 
     private void genTone(){
@@ -227,11 +228,12 @@ public class Speech extends Service implements OnInitListener {
         }
 
         try {
-            audioTrack = new AudioTrack(audioManagerMode,
+            if (audioTrack == null) {
+                audioTrack = new AudioTrack(audioManagerMode,
                     sampleRate, AudioFormat.CHANNEL_OUT_MONO,
                     AudioFormat.ENCODING_PCM_16BIT, generatedSnd.length,
                     AudioTrack.MODE_STREAM);
-
+            }
             audioTrack.setNotificationMarkerPosition(numSamples);
             audioTrack.setPlaybackPositionUpdateListener(new AudioTrack.OnPlaybackPositionUpdateListener() {
                 @Override
@@ -242,7 +244,7 @@ public class Speech extends Service implements OnInitListener {
                 @Override
                 public void onMarkerReached(AudioTrack track) {
 
-                    if (audioManager.isBluetoothA2dpOn()){
+                    if (audioManager.isBluetoothA2dpOn()) {
                         audioManager.setBluetoothScoOn(false);
                         audioManager.stopBluetoothSco();
                     }
@@ -252,17 +254,18 @@ public class Speech extends Service implements OnInitListener {
 
                     audioTrack.release();
                     audioManager.setStreamMute(AudioManager.STREAM_MUSIC, false);
-
+                    setFimFala(true);
                 }
             });
 
+            this.setFimFala(false);
             audioTrack.write(generatedSnd, 0, generatedSnd.length);     // Load the track
             audioTrack.play();                             // Play the track
 
-            while (audioContinuo==true){
-                audioTrack.write(generatedSnd, 0, generatedSnd.length);
+           // while (audioContinuo==true){
+           //     audioTrack.write(generatedSnd, 0, generatedSnd.length);
                 //Thread.currentThread().wait(5);
-            }
+           // }
         }
         catch (Exception e){
             Log.v(TAG, "Could not initialize Audiotrack.");

@@ -241,7 +241,14 @@ public class VarioService extends Service implements VarioIfc
 
     public void fala(final int modo)
     {
-        if((this.mSpeech != null) && (this.mSpeech.isFimFala()))
+        boolean mFimFala = mSpeech.isFimFala();
+
+        if (modo==-1) {
+            mSpeech.setAudioContinuo(false);
+            return;
+        }
+
+        if((mSpeech != null) && (mFimFala))
         {
             final Thread background = new Thread(new Runnable() {
                 public void run() {
@@ -296,15 +303,13 @@ public class VarioService extends Service implements VarioIfc
             } else  if (modo == 1) {
                 try {
                     //String tom = "Radio on";
-                    mSpeech.setAudioManagerMode(AudioManager.STREAM_RING);
+                    mSpeech.setAudioManagerMode(AudioManager.STREAM_NOTIFICATION);
                     mSpeech.setParaBluetooth(true);
                     //mSpeech.sayIt(tom, TextToSpeech.QUEUE_ADD);
                     mSpeech.gerarTom();
                 } catch (Throwable t) {
                     // just end the background thread
                 }
-            } else  if (modo == 2){
-                mSpeech.setAudioContinuo(false);
             }
         }
     }

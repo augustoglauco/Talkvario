@@ -1,8 +1,5 @@
 package de.oganisyan.paraglidervario;
 
-//import java.util.HashSet;
-//import java.util.Set;
-
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.content.ComponentName;
@@ -23,6 +20,7 @@ import android.widget.CompoundButton;
 import android.widget.Switch;
 import android.widget.Toast;
 
+import de.oganisyan.paraglidervario.device.LocationService;
 import de.oganisyan.paraglidervario.device.OrentationDevice;
 import de.oganisyan.paraglidervario.model.ServiceDataModel;
 import de.oganisyan.paraglidervario.model.VarioModel;
@@ -33,11 +31,7 @@ import de.oganisyan.paraglidervario.widgets.ImageButton;
 import de.oganisyan.tracking.IController;
 import de.oganisyan.tracking.IStatusListener;
 
-import static android.view.KeyEvent.*;
-
-//import de.oganisyan.paraglidervario.widgets.*;
 //import de.oganisyan.geo.Airspace;
-//import de.oganisyan.geo.db.*;
 
 public class VarioActivity extends Activity implements VarioIfc
 {
@@ -45,8 +39,8 @@ public class VarioActivity extends Activity implements VarioIfc
 	private ServiceConnection iControllerConnection;
 	private IServiceController iServiceController;
 	private IServiceDataListener iServiceDataListener;
-	private IStatusListener  iStatusListener;
-	//private LocationService ls;
+	private IStatusListener iStatusListener;
+	private LocationService ls;
 	private ServiceConnection mVarioConnection;
 	//private MapModel mapModel;
 	private Menu menu;
@@ -55,7 +49,7 @@ public class VarioActivity extends Activity implements VarioIfc
 	private ImageButton soundButton;
 	private Switch switchService;
 	private static int[] $SWITCH_TABLE$de$oganisyan$paraglidervario$VarioActivity$SERVICE_TYPE;
-	
+
 
 	static int[] $SWITCH_TABLE$de$oganisyan$paraglidervario$VarioActivity$SERVICE_TYPE() {
 		int[] $switch_TABLE$de$oganisyan$paraglidervario$VarioActivity$SERVICE_TYPE = VarioActivity.$SWITCH_TABLE$de$oganisyan$paraglidervario$VarioActivity$SERVICE_TYPE;
@@ -92,7 +86,7 @@ public class VarioActivity extends Activity implements VarioIfc
 		this.mVarioConnection = null;
 		this.iServiceController = null;
 		this.iServiceDataListener = null;
-		//this.ls = null;
+		this.ls = null;
 	}
 
 	static void access$3(final VarioActivity varioActivity, final IServiceController iServiceController) {
@@ -117,24 +111,24 @@ public class VarioActivity extends Activity implements VarioIfc
 
 	private boolean isServiceRunning(final SERVICE_TYPE service_TYPE) {
 		for (final ActivityManager.RunningServiceInfo activityManager$RunningServiceInfo : ((ActivityManager)this.getSystemService(Context.ACTIVITY_SERVICE)).getRunningServices(Integer.MAX_VALUE)) {
-			boolean b;
+			boolean b = false;
 			switch ($SWITCH_TABLE$de$oganisyan$paraglidervario$VarioActivity$SERVICE_TYPE()[service_TYPE.ordinal()]) {
-			default: {
-				continue;
-			}
-			case 1: {
-				if (activityManager$RunningServiceInfo.service.getClassName().equals(VarioService.class.getName())) {
-					b = activityManager$RunningServiceInfo.started;
-					break;
+				default: {
+					continue;
 				}
-			}
-			case 2: {
-				if (activityManager$RunningServiceInfo.service.getClassName().equals("de.oganisyan.tracking.Controller")) {
-					b = activityManager$RunningServiceInfo.started;
-					break;
+				case 1: {
+					if (activityManager$RunningServiceInfo.service.getClassName().equals(VarioService.class.getName())) {
+						b = activityManager$RunningServiceInfo.started;
+						break;
+					}
 				}
-				continue;
-			}
+				case 2: {
+					if (activityManager$RunningServiceInfo.service.getClassName().equals("de.oganisyan.tracking.Controller")) {
+						b = activityManager$RunningServiceInfo.started;
+						break;
+					}
+					continue;
+				}
 			}
 			return b;
 		}
@@ -144,15 +138,15 @@ public class VarioActivity extends Activity implements VarioIfc
 	private void saveSettings() {
 		final SharedPreferences.Editor edit = VarioUtil.getSharedPreferences(this.getApplicationContext()).edit();
 		edit.putBoolean("enableSound", this.soundButton.isChecked());
-		edit.apply();
+		edit.commit();
 
 	}
 
 	private void setConfigerMode(final boolean settingMode) {
-		if (model != null) {
-			model.setSettingMode(settingMode);
-			menu.setGroupVisible(R.id.menu_view_grp_standard, !settingMode);
-			menu.setGroupVisible(R.id.menu_view_grp_config, settingMode);
+		if (this.model != null) {
+			this.model.setSettingMode(settingMode);
+			this.menu.setGroupVisible(R.id.menu_view_grp_standard, !settingMode);
+			this.menu.setGroupVisible(R.id.menu_view_grp_config, settingMode);
 		}
 	}
 
@@ -165,12 +159,11 @@ public class VarioActivity extends Activity implements VarioIfc
 		}
 	}
 
- 	void doBindService(final boolean b) {
-		mVarioConnection = new ServiceConnection() {
+	void doBindService(final boolean b) {
+		this.mVarioConnection = (ServiceConnection)new ServiceConnection() {
 			public void onServiceConnected(final ComponentName componentName, final IBinder binder) {
-				VarioActivity.access$3(VarioActivity.this,IServiceController.Stub.asInterface(binder));
-				setEnebleBeep(soundButton.isChecked());
-
+				VarioActivity.access$3(VarioActivity.this, IServiceController.Stub.asInterface(binder));
+				VarioActivity.this.setEnebleBeep(VarioActivity.this.soundButton.isChecked());
 				VarioActivity.access$5(VarioActivity.this, new IServiceDataListener.Stub() {
 					public void onDataChanged(final ServiceDataModel data) throws RemoteException {
 						if (VarioActivity.this.model != null) {
@@ -179,38 +172,32 @@ public class VarioActivity extends Activity implements VarioIfc
 					}
 				});
 				try {
-					iServiceController.addListener(VarioActivity.this.iServiceDataListener);
+					VarioActivity.this.iServiceController.addListener(VarioActivity.this.iServiceDataListener);
 				}
 				catch (RemoteException ex) {
-					Toast.makeText(VarioActivity.this.getBaseContext(), "Error :" + ex.getMessage()
-							+ "\n" + ex.getClass().getName(), Toast.LENGTH_SHORT).show();
+					Toast.makeText(VarioActivity.this.getBaseContext(), (CharSequence)("Error :" + ex.getMessage() + "\n" + ex.getClass().getName()), Toast.LENGTH_SHORT).show();
 				}
 			}
 
 			public void onServiceDisconnected(final ComponentName componentName) {
 				while (true) {
 					try {
-						iServiceController.removeListener(VarioActivity.this.iServiceDataListener);
+						VarioActivity.this.iServiceController.removeListener(VarioActivity.this.iServiceDataListener);
 						VarioActivity.access$3(VarioActivity.this, null);
 						VarioActivity.access$5(VarioActivity.this, null);
-						//iServiceController = null;
-						//iServiceDataListener = null;
 					}
 					catch (RemoteException ex) {
-						Toast.makeText(getBaseContext(), "Error: "+ ex.getMessage()	+ "\n" +
-								ex.getClass().getName(), Toast.LENGTH_SHORT).show();
+						Toast.makeText(VarioActivity.this.getBaseContext(), (CharSequence)("Error :" + ex.getMessage() + "\n" + ex.getClass().getName()), Toast.LENGTH_SHORT).show();
 						continue;
 					}
 					break;
 				}
 			}
 		};
-		if (!b || startService(new Intent(this, VarioService.class)) != null) {
-			bindService(new Intent(this, VarioService.class), mVarioConnection,
-					Context.BIND_ADJUST_WITH_ACTIVITY);
+		if (!b || this.startService(new Intent((Context)this, (Class<VarioService>)VarioService.class)) != null) {
+			this.bindService(new Intent((Context)this, (Class<VarioService>) VarioService.class), this.mVarioConnection, Context.BIND_ABOVE_CLIENT); //8
 		}
-
-		iControllerConnection = new ServiceConnection() {
+		this.iControllerConnection = (ServiceConnection)new ServiceConnection() {
 			public void onServiceConnected(final ComponentName componentName, final IBinder binder) {
 				VarioActivity.access$8(VarioActivity.this, IController.Stub.asInterface(binder));
 				VarioActivity.access$9(VarioActivity.this, new IStatusListener.Stub() {
@@ -227,105 +214,100 @@ public class VarioActivity extends Activity implements VarioIfc
 					}
 				});
 				try {
-					final VarioModel varioModel = model;
+					final VarioModel access$4 = VarioActivity.this.model;
 					VarioModel.TrackingStatus trackingStatus;
-					if (iController.getStatus()) {
+					if (VarioActivity.this.iController.getStatus()) {
 						trackingStatus = VarioModel.TrackingStatus.TR_ON;
 					}
 					else {
 						trackingStatus = VarioModel.TrackingStatus.TR_OFF;
 					}
-					varioModel.setTrackingStatus(trackingStatus);
-					iController.addListener(iStatusListener);
+					access$4.setTrackingStatus(trackingStatus);
+					VarioActivity.this.iController.addListener(VarioActivity.this.iStatusListener);
 				}
 				catch (RemoteException ex) {
-					model.setTrackingStatus(VarioModel.TrackingStatus.TR_DOWN);
-					Toast.makeText(getBaseContext(), "Error :" + ex.getMessage() + "\n" +
-							ex.getClass().getName(), Toast.LENGTH_SHORT).show();
+					VarioActivity.this.model.setTrackingStatus(VarioModel.TrackingStatus.TR_DOWN);
+					Toast.makeText(VarioActivity.this.getBaseContext(), (CharSequence)("Error :" + ex.getMessage() + "\n" + ex.getClass().getName()), Toast.LENGTH_SHORT).show();
 				}
 			}
 
 			public void onServiceDisconnected(final ComponentName componentName) {
 				while (true) {
 					try {
-						iController.removeListener(VarioActivity.this.iStatusListener);
-						iController = null;
-						iStatusListener = null;
+						VarioActivity.this.iController.removeListener(VarioActivity.this.iStatusListener);
 						VarioActivity.access$9(VarioActivity.this, null);
 						VarioActivity.access$8(VarioActivity.this, null);
 					}
 					catch (RemoteException ex) {
-						Toast.makeText(getBaseContext(), "Error :" + ex.getMessage() + "\n" +
-								ex.getClass().getName(), Toast.LENGTH_SHORT).show();
+						Toast.makeText(VarioActivity.this.getBaseContext(), (CharSequence)("Error :" + ex.getMessage() + "\n" + ex.getClass().getName()), Toast.LENGTH_SHORT).show();
 						continue;
 					}
 					break;
 				}
 			}
 		};
-		final boolean serviceRunning = isServiceRunning(SERVICE_TYPE.VARIO);
-		if (!serviceRunning || startService(new Intent(IController.class.getName())) != null) {
-			bindService(new Intent(IController.class.getName()), iControllerConnection, Context.BIND_ADJUST_WITH_ACTIVITY);
+		final boolean serviceRunning = this.isServiceRunning(SERVICE_TYPE.VARIO);
+		if (!serviceRunning || this.startService(new Intent(IController.class.getName())) != null) {
+			this.bindService(new Intent(IController.class.getName()), this.iControllerConnection, Context.BIND_ABOVE_CLIENT); //8
 		}
 		else {
-			model.setTrackingStatus(VarioModel.TrackingStatus.TR_DOWN);
-			iControllerConnection = null;
+			this.model.setTrackingStatus(VarioModel.TrackingStatus.TR_DOWN);
+			this.iControllerConnection = null;
 			VarioUtil.showTrackingDialog(this);
 		}
 		this.switchService.setChecked(serviceRunning);
 	}
 
 	void doUnBindService() {
-		if (mVarioConnection != null) {
-			unbindService(this.mVarioConnection);
-			mVarioConnection = null;
+		if (this.mVarioConnection != null) {
+			this.unbindService(this.mVarioConnection);
+			this.mVarioConnection = null;
 		}
-		if (iControllerConnection != null) {
-			unbindService(this.iControllerConnection);
-			iControllerConnection = null;
+		if (this.iControllerConnection != null) {
+			this.unbindService(this.iControllerConnection);
+			this.iControllerConnection = null;
 		}
+
 	}
 
-	public void onBackPressed() {		
+	public void onBackPressed() {
 		super.openOptionsMenu();
 	}
 
 	public void onCreate(final Bundle bundle) {
 		super.onCreate(bundle);
-		setContentView(R.layout.activity_view);
-		//this.ls = new LocationService(this);
-		(switchService = (Switch)this.findViewById(R.id.switchService)).setChecked(true);
-		final HorizontalScrollView horizontalScrollView = (HorizontalScrollView) findViewById(R.id.horizontalScrollView1);
-		model = horizontalScrollView.getVarioView().getModel();
-		soundButton = (ImageButton)this.findViewById(R.id.button);
-		model.setSatView((ImageButton)this.findViewById(R.id.buttonSat));
-		switchService.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+		this.setContentView(R.layout.activity_view);
+		//this.ls = new LocationService((Context)this);
+		(this.switchService = (Switch)this.findViewById(R.id.switchService)).setChecked(true);
+		final HorizontalScrollView horizontalScrollView = (HorizontalScrollView)this.findViewById(R.id.horizontalScrollView1);
+		this.model = horizontalScrollView.getVarioView().getModel();
+		this.soundButton = (ImageButton)this.findViewById(R.id.button);
+		this.model.setSatView((ImageButton)this.findViewById(R.id.buttonSat));
+		this.switchService.setOnCheckedChangeListener((CompoundButton.OnCheckedChangeListener)new CompoundButton.OnCheckedChangeListener() {
 			public void onCheckedChanged(final CompoundButton compoundButton, final boolean b) {
 				if (b) {
-					doBindService(true);
+					VarioActivity.this.doBindService(true);
 				}
 				else {
-					doUnBindService();
-					stopService(new Intent(VarioActivity.this, VarioService.class));
-					stopService(new Intent(IController.class.getName()));
+					VarioActivity.this.doUnBindService();
+					VarioActivity.this.stopService(new Intent((Context)VarioActivity.this, (Class<VarioService>)VarioService.class));
+					VarioActivity.this.stopService(new Intent(IController.class.getName()));
 				}
 			}
 		});
-
-		soundButton.setOnClickListener(new View.OnClickListener() {
+		this.soundButton.setOnClickListener((View.OnClickListener)new View.OnClickListener() {
 			public void onClick(final View view) {
-				setEnebleBeep(soundButton.isChecked());
+				VarioActivity.this.setEnebleBeep(VarioActivity.this.soundButton.isChecked());
 			}
 		});
-
-		orentationHelper = new OrentationDevice(getApplicationContext()) {
+		this.orentationHelper = new OrentationDevice(this.getApplicationContext()) {
 			public void onOrentationChanged(final float n) {
-				onOrentationChanged(n);           }
+				VarioActivity.this.onOrentationChanged(n);           }
 		};
 		//this.mapModel = horizontalScrollView.getMapView().getModel();
 		//this.model.setMapModel(this.mapModel);
-		this.doBindService(false);	
-	
+		this.doBindService(false);
+
 	}
 
 	public boolean onCreateOptionsMenu(final Menu menu) {
@@ -336,20 +318,20 @@ public class VarioActivity extends Activity implements VarioIfc
 	}
 
 	protected void onDestroy() {
-		if (orentationHelper != null) {
-			orentationHelper.destroy();
+		if (this.orentationHelper != null) {
+			this.orentationHelper.destroy();
 		}
 		this.saveSettings();
 		while (true) {
 			try {
-				doUnBindService();
+				this.doUnBindService();
 				super.onDestroy();
-				if (model != null) {
-					model.destroy();
+				if (this.model != null) {
+					this.model.destroy();
 				}
-				/*if (this.mapModel != null) {
-					this.mapModel.destroy();
-				}   */
+				//if (this.mapModel != null) {
+				//	this.mapModel.destroy();
+				//}
 			}
 			catch (Throwable t) {
 				Log.e("MainActivity", "Failed to unbind from the service", t);
@@ -362,135 +344,134 @@ public class VarioActivity extends Activity implements VarioIfc
 	public boolean onOptionsItemSelected(final MenuItem menuItem) {
 		boolean onOptionsItemSelected = true;
 		switch (menuItem.getItemId()) {
-		default: {
-			onOptionsItemSelected = super.onOptionsItemSelected(menuItem);
-			break;
-		}
-		case R.id.menu_view_audio: {
-			startActivity(new Intent(this, AudioActivity.class));
-			break;
-		}
-		case R.id.menu_view_settings: {
-			startActivity(new Intent(this, SettingsActivity.class));
-			break;
-		}
-		case R.id.menu_view_exit: {
-			finish();
-			break;
-		}
-		case R.id.menu_view_tracking: {
-			VarioUtil.showTrackingApp(this);
-			break;
-		}
-		case R.id.menu_view_config: {
-			setConfigerMode(onOptionsItemSelected);
-			break;
-		}
-		case R.id.menu_view_defaults: {
-			model.resetSettings();
-			setConfigerMode(false);
-			break;
-		}
-		case R.id.menu_view_save: {
-			model.saveSettings();
-			setConfigerMode(false);
-			break;
-		}
-		case R.id.menu_view_cancel: {
-			model.cancelSettings();
-			setConfigerMode(false);
-			break;
-		}
+			default: {
+				onOptionsItemSelected = super.onOptionsItemSelected(menuItem);
+				break;
+			}
+			case R.id.menu_view_audio: {
+				this.startActivity(new Intent((Context)this, (Class<AudioActivity>)AudioActivity.class));
+				break;
+			}
+			case R.id.menu_view_settings: {
+				this.startActivity(new Intent((Context)this, (Class<SettingsActivity>)SettingsActivity.class));
+				break;
+			}
+			case R.id.menu_view_exit: {
+				this.finish();
+				break;
+			}
+			case R.id.menu_view_tracking: {
+				VarioUtil.showTrackingApp(this);
+				break;
+			}
+			case R.id.menu_view_config: {
+				this.setConfigerMode(onOptionsItemSelected);
+				break;
+			}
+			case R.id.menu_view_defaults: {
+				this.model.resetSettings();
+				this.setConfigerMode(false);
+				break;
+			}
+			case R.id.menu_view_save: {
+				this.model.saveSettings();
+				this.setConfigerMode(false);
+				break;
+			}
+			case R.id.menu_view_cancel: {
+				this.model.cancelSettings();
+				this.setConfigerMode(false);
+				break;
+			}
 		}
 		return onOptionsItemSelected;
 	}
 
 	public void onOrentationChanged(final float n) {
-		if (model != null) {
-			model.setOrentation(n);
+		if (this.model != null) {
+			this.model.setOrentation(n);
 		}
-/*		if (this.mapModel != null) {
-			this.mapModel.setOrentation(n);
-		}*/
+		///if (this.mapModel != null) {
+		//	this.mapModel.setOrentation(n);
+		//}
 	}
 
 	protected void onPostCreate(final Bundle bundle) {
 		super.onPostCreate(bundle);
-		getSettings();
+		this.getSettings();
 	}
 
-	@Override
 	protected void onSaveInstanceState(final Bundle bundle) {
 		super.onSaveInstanceState(bundle);
-		saveSettings();
+		this.saveSettings();
 	}
 
 	protected void onStart() {
-		/*if (this.mapModel != null) {
-			DBHelper.open(this);
+		//if (this.mapModel != null) {
+		//	DBHelper.open((Context)this);
 			//TODO rever se linha abaixo funciona
-			this.mapModel.setAirspaces(Airspace.loadFromDB(VarioUtil.getSharedPreferences(this.getApplicationContext()).getStringSet("Airspaces", new HashSet<String>())));
-			this.mapModel.setLocation(this.ls.getLastKnownGPSLocation());                        
-		}	*/
+		//	this.mapModel.setAirspaces(Airspace.loadFromDB(VarioUtil.getSharedPreferences(this.getApplicationContext()).getStringSet("Airspaces", (Set<String>)new HashSet<String>())));
+		//	this.mapModel.setLocation(this.ls.getLastKnownGPSLocation());
+		//}
 		super.onStart();
-		
-		 // Store our shared preference
-        SharedPreferences sp = getSharedPreferences("VARIOACTIVITY", MODE_PRIVATE);
-        Editor ed = sp.edit();
-        ed.putBoolean("active", true);
-        ed.apply();
+
+		// Store our shared preference
+		SharedPreferences sp = getSharedPreferences("VARIOACTIVITY", MODE_PRIVATE);
+		Editor ed = sp.edit();
+		ed.putBoolean("active", true);
+		ed.commit();
 	}
-	
+
 	protected void onStop(){
-	      super.onStop();	         
-	        // Store our shared preference
-	        SharedPreferences sp = getSharedPreferences("VARIOACTIVITY", MODE_PRIVATE);
-	        Editor ed = sp.edit();
-	        ed.putBoolean("active", false);
-	        ed.apply();
+		super.onStop();
+		// Store our shared preference
+		SharedPreferences sp = getSharedPreferences("VARIOACTIVITY", MODE_PRIVATE);
+		Editor ed = sp.edit();
+		ed.putBoolean("active", false);
+		ed.commit();
 	}
-	
+
 	enum SERVICE_TYPE
 	{
-		TRACKING("TRACKING"),
-		VARIO("VARIO");
+		TRACKING("TRACKING", 1),
+		VARIO("VARIO", 0);
 
 		private String stringValue;
-		private SERVICE_TYPE(String toString) {
+		private SERVICE_TYPE(String toString, int value) {
 			stringValue = toString;
 		}
 		@Override
 		public String toString() {
 			return stringValue;
-		} 
+		}
 
 	}
-	
+
 	@Override
 	public boolean dispatchKeyEvent(KeyEvent event) {
 		try {
 			String codTecla = String.valueOf(event.getKeyCode());
 
 
-			if ((this.iServiceController != null) && (event.getAction()== ACTION_DOWN))
+			if ((this.iServiceController != null) && (event.getAction()== KeyEvent.ACTION_DOWN))
 			{
 				if (codTecla.equals("66")) {
 					return true;
 				}
 				else if (codTecla.equals("24"))
 				{
-					iServiceController.fala(1);
+					this.iServiceController.fala(1);
 					return true;
 					//KeyEvent.DispatcherState state = this.findViewById(android.R.id.content).getKeyDispatcherState();
 					//if (state != null) {
 					//	state.startTracking(event, this);
 					//}
 				}
-			}else if ((iServiceController != null) && (event.getAction()== ACTION_UP))
+			}else if ((this.iServiceController != null) && (event.getAction()== KeyEvent.ACTION_UP))
 			{
 
 				if (codTecla.equals("66")) {
-					iServiceController.fala(0);
+					this.iServiceController.fala(0);
 					return true;
 				}
 				else if (codTecla.equals("24"))
@@ -498,8 +479,8 @@ public class VarioActivity extends Activity implements VarioIfc
 					//this.findViewById(android.R.id.content).getKeyDispatcherState().handleUpEvent(event);
 					//if (event.isTracking() && !event.isCanceled())
 					//{
-						iServiceController.fala(2);
-						return true;
+					this.iServiceController.fala(-1); // parar modo continuo
+					return true;
 					//}
 				}
 			}
@@ -510,5 +491,4 @@ public class VarioActivity extends Activity implements VarioIfc
 
 		return super.dispatchKeyEvent(event);
 	}
-
 }
