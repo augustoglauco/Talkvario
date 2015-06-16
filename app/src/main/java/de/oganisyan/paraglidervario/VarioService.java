@@ -42,6 +42,7 @@ public class VarioService extends Service implements VarioIfc
     private boolean mBound;    
     AtomicBoolean isRunning;
     private Handler handler=new Handler();
+    private String TAG = "VarioService";
 
 	public VarioService() {
         super();
@@ -52,7 +53,6 @@ public class VarioService extends Service implements VarioIfc
         this.mBound = false;
         this.mSpeech = null;
         this.isRunning=new AtomicBoolean(false);
-        //this.audio = new AudioUtil();
     }
     
     private void broadcastMessageToUI(final ServiceDataModel serviceDataModel) {
@@ -181,10 +181,8 @@ public class VarioService extends Service implements VarioIfc
                 VarioService.this.broadcastMessageToUI(new ServiceDataModel(VarioService.this.ls.getLastKnownGPSLocation(), this.getData()));
             }
         };
-        Log.i("MyService", "Service Started.");
+        Log.i(TAG, "Service Started.");
         this.accHelper = new AccelerationDevice(this.getApplicationContext());
-
-        //(this.nm = (NotificationManager)this.getSystemService(NOTIFICATION_SERVICE)).notify(R.string.service_started, new Notification.Builder(this)...getNotification());
 
         Intent intent = new Intent(this, VarioActivity.class);
         PendingIntent pIntent = PendingIntent.getActivity(this, 0, intent, 0);
@@ -220,13 +218,13 @@ public class VarioService extends Service implements VarioIfc
         this.accHelper.unregisterListeners();
         this.mClients.clear();
         BeepDevice.instanceOf().stop();
-        Log.i("VarioService", "Service Stopped.");
         this.mSpeech.stopSelf();
         this.mSpeech = null;
+        Log.i(TAG, "Service Stopped.");
     }
     
     public int onStartCommand(final Intent intent, final int n, final int n2) {
-        Log.i("MyService", "Received start id " + n2 + ": " + intent);               
+        Log.i(TAG, "Received start id " + n2 + ": " + intent);
         return 1;
     }
           
@@ -243,12 +241,8 @@ public class VarioService extends Service implements VarioIfc
     {
         boolean mFimFala = mSpeech.isFimFala();
 
-        if (modo==-1) {
-            mSpeech.setAudioContinuo(false);
-            return;
-        }
-
-        if((mSpeech != null) && (mFimFala))
+        //if((mSpeech != null) && (mFimFala))
+        if(mFimFala)
         {
             final Thread background = new Thread(new Runnable() {
                 public void run() {
@@ -298,17 +292,15 @@ public class VarioService extends Service implements VarioIfc
                     mSpeech.setAudioManagerMode(AudioManager.STREAM_NOTIFICATION);
                     mSpeech.sayIt(texto.toString(), TextToSpeech.QUEUE_ADD);
                 } catch (Throwable t) {
-                    // just end the background thread
+                    Log.i(TAG, "SayIt error.");
                 }
             } else  if (modo == 1) {
                 try {
-                    //String tom = "Radio on";
                     mSpeech.setAudioManagerMode(AudioManager.STREAM_NOTIFICATION);
                     mSpeech.setParaBluetooth(true);
-                    //mSpeech.sayIt(tom, TextToSpeech.QUEUE_ADD);
                     mSpeech.gerarTom();
                 } catch (Throwable t) {
-                    // just end the background thread
+                    Log.i(TAG, "GerarTom error.");
                 }
             }
         }

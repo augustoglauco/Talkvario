@@ -20,7 +20,6 @@ import android.widget.CompoundButton;
 import android.widget.Switch;
 import android.widget.Toast;
 
-import de.oganisyan.paraglidervario.device.LocationService;
 import de.oganisyan.paraglidervario.device.OrentationDevice;
 import de.oganisyan.paraglidervario.model.ServiceDataModel;
 import de.oganisyan.paraglidervario.model.VarioModel;
@@ -40,7 +39,7 @@ public class VarioActivity extends Activity implements VarioIfc
 	private IServiceController iServiceController;
 	private IServiceDataListener iServiceDataListener;
 	private IStatusListener iStatusListener;
-	private LocationService ls;
+	//private LocationService ls;
 	private ServiceConnection mVarioConnection;
 	//private MapModel mapModel;
 	private Menu menu;
@@ -48,6 +47,7 @@ public class VarioActivity extends Activity implements VarioIfc
 	private OrentationDevice orentationHelper;
 	private ImageButton soundButton;
 	private Switch switchService;
+	private static String TAG = "VarioActivity";
 	private static int[] $SWITCH_TABLE$de$oganisyan$paraglidervario$VarioActivity$SERVICE_TYPE;
 
 
@@ -62,7 +62,9 @@ public class VarioActivity extends Activity implements VarioIfc
 						$switch_TABLE$de$oganisyan$paraglidervario$VarioActivity$SERVICE_TYPE[SERVICE_TYPE.VARIO.ordinal()] = 1;
 						VarioActivity.$SWITCH_TABLE$de$oganisyan$paraglidervario$VarioActivity$SERVICE_TYPE = $switch_TABLE$de$oganisyan$paraglidervario$VarioActivity$SERVICE_TYPE;
 					}
-					catch (NoSuchFieldError noSuchFieldError) {}
+					catch (NoSuchFieldError noSuchFieldError) {
+						Log.i(TAG, "NoSuchFieldError");
+					}
 				}
 				catch (NoSuchFieldError noSuchFieldError2) {
 					continue;
@@ -86,7 +88,7 @@ public class VarioActivity extends Activity implements VarioIfc
 		this.mVarioConnection = null;
 		this.iServiceController = null;
 		this.iServiceDataListener = null;
-		this.ls = null;
+		//this.ls = null;
 	}
 
 	static void access$3(final VarioActivity varioActivity, final IServiceController iServiceController) {
@@ -111,7 +113,7 @@ public class VarioActivity extends Activity implements VarioIfc
 
 	private boolean isServiceRunning(final SERVICE_TYPE service_TYPE) {
 		for (final ActivityManager.RunningServiceInfo activityManager$RunningServiceInfo : ((ActivityManager)this.getSystemService(Context.ACTIVITY_SERVICE)).getRunningServices(Integer.MAX_VALUE)) {
-			boolean b = false;
+			boolean b ;
 			switch ($SWITCH_TABLE$de$oganisyan$paraglidervario$VarioActivity$SERVICE_TYPE()[service_TYPE.ordinal()]) {
 				default: {
 					continue;
@@ -138,7 +140,7 @@ public class VarioActivity extends Activity implements VarioIfc
 	private void saveSettings() {
 		final SharedPreferences.Editor edit = VarioUtil.getSharedPreferences(this.getApplicationContext()).edit();
 		edit.putBoolean("enableSound", this.soundButton.isChecked());
-		edit.commit();
+		edit.apply();
 
 	}
 
@@ -160,7 +162,7 @@ public class VarioActivity extends Activity implements VarioIfc
 	}
 
 	void doBindService(final boolean b) {
-		this.mVarioConnection = (ServiceConnection)new ServiceConnection() {
+		this.mVarioConnection = new ServiceConnection() {
 			public void onServiceConnected(final ComponentName componentName, final IBinder binder) {
 				VarioActivity.access$3(VarioActivity.this, IServiceController.Stub.asInterface(binder));
 				VarioActivity.this.setEnebleBeep(VarioActivity.this.soundButton.isChecked());
@@ -175,7 +177,7 @@ public class VarioActivity extends Activity implements VarioIfc
 					VarioActivity.this.iServiceController.addListener(VarioActivity.this.iServiceDataListener);
 				}
 				catch (RemoteException ex) {
-					Toast.makeText(VarioActivity.this.getBaseContext(), (CharSequence)("Error :" + ex.getMessage() + "\n" + ex.getClass().getName()), Toast.LENGTH_SHORT).show();
+					Toast.makeText(VarioActivity.this.getBaseContext(), "Error :" + ex.getMessage() + "\n" + ex.getClass().getName(), Toast.LENGTH_SHORT).show();
 				}
 			}
 
@@ -187,7 +189,7 @@ public class VarioActivity extends Activity implements VarioIfc
 						VarioActivity.access$5(VarioActivity.this, null);
 					}
 					catch (RemoteException ex) {
-						Toast.makeText(VarioActivity.this.getBaseContext(), (CharSequence)("Error :" + ex.getMessage() + "\n" + ex.getClass().getName()), Toast.LENGTH_SHORT).show();
+						Toast.makeText(VarioActivity.this.getBaseContext(), "Error :" + ex.getMessage() + "\n" + ex.getClass().getName(), Toast.LENGTH_SHORT).show();
 						continue;
 					}
 					break;
@@ -267,7 +269,6 @@ public class VarioActivity extends Activity implements VarioIfc
 			this.unbindService(this.iControllerConnection);
 			this.iControllerConnection = null;
 		}
-
 	}
 
 	public void onBackPressed() {
@@ -407,14 +408,7 @@ public class VarioActivity extends Activity implements VarioIfc
 	}
 
 	protected void onStart() {
-		//if (this.mapModel != null) {
-		//	DBHelper.open((Context)this);
-			//TODO rever se linha abaixo funciona
-		//	this.mapModel.setAirspaces(Airspace.loadFromDB(VarioUtil.getSharedPreferences(this.getApplicationContext()).getStringSet("Airspaces", (Set<String>)new HashSet<String>())));
-		//	this.mapModel.setLocation(this.ls.getLastKnownGPSLocation());
-		//}
 		super.onStart();
-
 		// Store our shared preference
 		SharedPreferences sp = getSharedPreferences("VARIOACTIVITY", MODE_PRIVATE);
 		Editor ed = sp.edit();
@@ -437,7 +431,7 @@ public class VarioActivity extends Activity implements VarioIfc
 		VARIO("VARIO", 0);
 
 		private String stringValue;
-		private SERVICE_TYPE(String toString, int value) {
+		SERVICE_TYPE(String toString, int value) {
 			stringValue = toString;
 		}
 		@Override
@@ -452,36 +446,23 @@ public class VarioActivity extends Activity implements VarioIfc
 		try {
 			String codTecla = String.valueOf(event.getKeyCode());
 
-
 			if ((this.iServiceController != null) && (event.getAction()== KeyEvent.ACTION_DOWN))
 			{
 				if (codTecla.equals("66")) {
 					return true;
 				}
 				else if (codTecla.equals("24"))
-				{
-					this.iServiceController.fala(1);
-					return true;
-					//KeyEvent.DispatcherState state = this.findViewById(android.R.id.content).getKeyDispatcherState();
-					//if (state != null) {
-					//	state.startTracking(event, this);
-					//}
-				}
-			}else if ((this.iServiceController != null) && (event.getAction()== KeyEvent.ACTION_UP))
-			{
-
+					 	return true;
+			}
+			else if ((this.iServiceController != null) && (event.getAction()== KeyEvent.ACTION_UP)) {
 				if (codTecla.equals("66")) {
-					this.iServiceController.fala(0);
+					this.iServiceController.fala(0); // SayIt
 					return true;
 				}
 				else if (codTecla.equals("24"))
 				{
-					//this.findViewById(android.R.id.content).getKeyDispatcherState().handleUpEvent(event);
-					//if (event.isTracking() && !event.isCanceled())
-					//{
-					this.iServiceController.fala(-1); // parar modo continuo
+					this.iServiceController.fala(1); // Play Tom
 					return true;
-					//}
 				}
 			}
 		}

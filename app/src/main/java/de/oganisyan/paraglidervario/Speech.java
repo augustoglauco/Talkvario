@@ -7,7 +7,6 @@ import android.media.AudioFormat;
 import android.media.AudioManager;
 import android.media.AudioTrack;
 import android.os.Binder;
-import android.os.Handler;
 import android.os.IBinder;
 import android.speech.tts.TextToSpeech;
 import android.speech.tts.TextToSpeech.OnInitListener;
@@ -23,35 +22,23 @@ public class Speech extends Service implements OnInitListener {
 
 	private String str;
 	private TextToSpeech mTts;
-	private static final String TAG="TTSService";
+	private static final String TAG="SpeechService";
 	private final IBinder mBinder = new LocalBinder();
 	public static boolean fimFala = true;
-	private int audioManagerMode = AudioManager.STREAM_MUSIC;
+	private int audioManagerMode = AudioManager.STREAM_NOTIFICATION;
     private boolean paraBluetooth = false;
     private AudioManager audioManager;
-    private AudioTrack audioTrack = null;
-    private boolean audioContinuo = true;
-
-    public void setAudioContinuo(boolean audioContinuo) {
-        this.audioContinuo = audioContinuo;
-    }
-
-    private final int duration = 2; // seconds
+    private AudioTrack audioTrack;
+    private final int duration = 1; // seconds
     private final int sampleRate = 44100;
     private final int numSamples = duration * sampleRate;
     private final double sample[] = new double[numSamples];
     private float freqOfTone = 19000; // hz
     private final byte generatedSnd[] = new byte[2 * numSamples];
 
-    Handler handler = new Handler();
-
     public void setParaBluetooth(boolean paraBluetooth) {
         this.paraBluetooth = paraBluetooth;
     }
-
-	public int getAudioManagerMode() {
-		return audioManagerMode;
-	}
 
 	public void setAudioManagerMode(int audioManagerMode) {
 		this.audioManagerMode = audioManagerMode;
@@ -67,7 +54,6 @@ public class Speech extends Service implements OnInitListener {
 
 	@Override
 	public void onCreate() {
-
 		mTts = new TextToSpeech(this, this);
 		mTts.setSpeechRate(1);
         audioManager = (AudioManager) getSystemService(AUDIO_SERVICE);
@@ -82,14 +68,19 @@ public class Speech extends Service implements OnInitListener {
 			mTts.stop();
 			mTts.shutdown();
 		}
+        if (audioTrack != null){
+            audioTrack.release();
+        }
+        if (audioManager != null){
+            audioManager =null;
+        }
+
 		super.onDestroy();
 	}
 
 	@Override
 	public void onInit(int status) {
-		Log.v(TAG, "oninit");
-		if (status == TextToSpeech.SUCCESS) {			
-		
+		if (status == TextToSpeech.SUCCESS) {
 			mTts.setOnUtteranceProgressListener(new UtteranceProgressListener() {
 				@Override 
 				public void onDone(String utteranceId) {
@@ -141,56 +132,33 @@ public class Speech extends Service implements OnInitListener {
     }
 
 	public void sayIt(String str, int modo) {
-
 		HashMap<String, String> myHashAlarm = new HashMap<String, String>();
 		myHashAlarm.put(TextToSpeech.Engine.KEY_PARAM_STREAM, String.valueOf(audioManagerMode));
 		myHashAlarm.put(TextToSpeech.Engine.KEY_PARAM_UTTERANCE_ID, "FINISHED PLAYING");
-		//if (this.isFimFala())
-		{
-            audioManager.setStreamMute(AudioManager.STREAM_MUSIC, true);
+		audioManager.setStreamMute(AudioManager.STREAM_MUSIC, true);
 
-            if (audioManager.isBluetoothA2dpOn()){
-                if (paraBluetooth) {
-                    audioManager.setBluetoothScoOn(true);
-                    audioManager.startBluetoothSco();
-                }
-                else {
-                    audioManager.setBluetoothScoOn(false);
-                    audioManager.stopBluetoothSco();
-                }
+        if (audioManager.isBluetoothA2dpOn()){
+            if (paraBluetooth) {
+                audioManager.setBluetoothScoOn(true);
+                audioManager.startBluetoothSco();
             }
+            else {
+                audioManager.setBluetoothScoOn(false);
+                audioManager.stopBluetoothSco();
+            }
+        }
 
-			this.setFimFala(false);
-			mTts.speak(str, modo, myHashAlarm);
-		}
+		this.setFimFala(false);
+		mTts.speak(str, modo, myHashAlarm);
 	}
 
-	public void saySilence(long tempo) {    
+	/*public void saySilence(long tempo) {
 		HashMap<String, String> myHashAlarm = new HashMap<String, String>();
 		myHashAlarm.put(TextToSpeech.Engine.KEY_PARAM_STREAM, String.valueOf(audioManagerMode));
 		myHashAlarm.put(TextToSpeech.Engine.KEY_PARAM_UTTERANCE_ID, "FINISHED PLAYING");
-		//if (!mTts.isSpeaking())
-		{
-			this.setFimFala(false);
-			mTts.playSilence(tempo, TextToSpeech.QUEUE_ADD, myHashAlarm) ;
-		}		
-	}
-
-    public void gerarTom() {
-        // Use a new tread as this can take a while
-       // final Thread thread = new Thread(new Runnable() {
-        //    public void run() {
-                genTone();
-               // handler.post(new Runnable() {
-
-                    //public void run() {
-                        playSound();
-                   // }
-               // });
-           // }
-       // });
-       // thread.start();
-    }
+    	this.setFimFala(false);
+		mTts.playSilence(tempo, TextToSpeech.QUEUE_ADD, myHashAlarm) ;
+	}*/
 
     private void genTone(){
         // fill out the array
@@ -212,7 +180,7 @@ public class Speech extends Service implements OnInitListener {
         }
     }
 
-    private void playSound(){
+    private void playTone(){
 
         audioManager.setStreamMute(AudioManager.STREAM_MUSIC, true);
 
@@ -252,7 +220,7 @@ public class Speech extends Service implements OnInitListener {
                     audioManager.setBluetoothScoOn(false);
                     audioManager.stopBluetoothSco();
 
-                    audioTrack.release();
+                    //audioTrack.release();
                     audioManager.setStreamMute(AudioManager.STREAM_MUSIC, false);
                     setFimFala(true);
                 }
@@ -261,14 +229,15 @@ public class Speech extends Service implements OnInitListener {
             this.setFimFala(false);
             audioTrack.write(generatedSnd, 0, generatedSnd.length);     // Load the track
             audioTrack.play();                             // Play the track
-
-           // while (audioContinuo==true){
-           //     audioTrack.write(generatedSnd, 0, generatedSnd.length);
-                //Thread.currentThread().wait(5);
-           // }
         }
         catch (Exception e){
-            Log.v(TAG, "Could not initialize Audiotrack.");
+            Log.v(TAG, "Erro playing tone:" + e.toString());
         }
     }
+
+    public void gerarTom() {
+        genTone();
+        playTone();
+    }
+
 }
