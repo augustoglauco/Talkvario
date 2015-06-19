@@ -10,7 +10,6 @@ import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.hardware.SensorEvent;
 import android.media.AudioManager;
-import android.os.Handler;
 import android.os.IBinder;
 import android.os.Messenger;
 import android.os.RemoteException;
@@ -41,7 +40,6 @@ public class VarioService extends Service implements VarioIfc
     private Speech mSpeech;
     private boolean mBound;    
     AtomicBoolean isRunning;
-    private Handler handler=new Handler();
     private String TAG = "VarioService";
 
 	public VarioService() {
@@ -239,18 +237,24 @@ public class VarioService extends Service implements VarioIfc
 
     public void fala(final int modo)
     {
+        if (modo==-1){
+            Speech.tomContinuo = false;
+            return;
+        }
+
+        //final Handler handler=new Handler();
         boolean mFimFala = mSpeech.isFimFala();
 
         //if((mSpeech != null) && (mFimFala))
-        if(mFimFala)
+        if((mFimFala))
         {
             final Thread background = new Thread(new Runnable() {
                 public void run() {
-                    handler.post(new Runnable() {
-                        public void run() {
+                   // handler.post(new Runnable() {
+                       // public void run() {
                             mFala(modo);
-                        }
-                    });
+                       // }
+                //});
                 }
             });
             background.start();
@@ -265,6 +269,7 @@ public class VarioService extends Service implements VarioIfc
         //qnh = calcQNH; - Pressao ao nivel do mar em hPa
         //qfe = qfe; (ajuste a zero) - Pressao do barometro no momento
         //airfieldHeight = aitfeldHeight;
+
 
         SharedPreferences sp = getSharedPreferences("VARIOACTIVITY", MODE_PRIVATE);
         boolean bvarioActivity = sp.getBoolean("active", false);
@@ -298,6 +303,7 @@ public class VarioService extends Service implements VarioIfc
                 try {
                     mSpeech.setAudioManagerMode(AudioManager.STREAM_NOTIFICATION);
                     mSpeech.setParaBluetooth(true);
+                    Speech.tomContinuo = true;
                     mSpeech.gerarTom();
                 } catch (Throwable t) {
                     Log.i(TAG, "GerarTom error.");

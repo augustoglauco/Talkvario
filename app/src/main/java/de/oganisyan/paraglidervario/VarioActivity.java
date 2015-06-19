@@ -48,6 +48,7 @@ public class VarioActivity extends Activity implements VarioIfc
 	private ImageButton soundButton;
 	private Switch switchService;
 	private static String TAG = "VarioActivity";
+	private static boolean flag = true;
 	private static int[] $SWITCH_TABLE$de$oganisyan$paraglidervario$VarioActivity$SERVICE_TYPE;
 
 	static int[] $SWITCH_TABLE$de$oganisyan$paraglidervario$VarioActivity$SERVICE_TYPE() {
@@ -453,7 +454,10 @@ public class VarioActivity extends Activity implements VarioIfc
 					return true;
 				}
 				else if (codTecla.equals("24")){
-					this.iServiceController.fala(Speech.tom); // Tom
+					if (flag){
+						flag = false;
+						this.iServiceController.fala(Speech.tom); // Tom
+					}
 					return true;
 				}
 			}
@@ -464,6 +468,8 @@ public class VarioActivity extends Activity implements VarioIfc
 				}
 				else if (codTecla.equals("24"))
 				{
+					this.iServiceController.fala(-1); // desliga tom
+					flag=true;
 					return true;
 				}
 			}
