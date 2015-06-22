@@ -13,7 +13,6 @@ import android.speech.tts.TextToSpeech.OnInitListener;
 import android.speech.tts.UtteranceProgressListener;
 import android.util.Log;
 
-import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Locale;
 
@@ -26,27 +25,23 @@ public class Speech extends Service implements OnInitListener {
     private static final String TAG = "SpeechService";
     private final IBinder mBinder = new LocalBinder();
     public static boolean fimFala = true;
-    private int audioManagerMode = AudioManager.STREAM_NOTIFICATION;
+    //private int audioManagerMode = AudioManager.STREAM_NOTIFICATION;
     private boolean paraBluetooth = false;
     private AudioManager audioManager;
     private AudioTrack audioTrack;
-    private final int duration = 1; // miliseconds
     private final int sampleRate = 44100;
-    private final int numSamples = duration * sampleRate;
-    private final double sample[] = new double[numSamples];
-    private float freqOfTone = 19000; // hz
-    private final byte generatedSnd[] = new byte[2 * numSamples];
-    public static final int dadosVoo = 0;
-    public static final int tom = 1;
     public static boolean tomContinuo = true;
+    public static final int FALA_TOM = 1;
+    public static final int FALA_DADOSVOO = 0;
+    public static final int FALA_PARATOM = -1;
 
-    public void setParaBluetooth(boolean paraBluetooth) {
-        this.paraBluetooth = paraBluetooth;
-    }
+    //public void setParaBluetooth(boolean paraBluetooth) {
+     //   this.paraBluetooth = paraBluetooth;
+    //}
 
-    public void setAudioManagerMode(int audioManagerMode) {
-        this.audioManagerMode = audioManagerMode;
-    }
+   // public void setAudioManagerMode(int audioManagerMode) {
+   //     this.audioManagerMode = audioManagerMode;
+   // }
 
     public boolean isFimFala() {
         return fimFala;
@@ -95,11 +90,7 @@ public class Speech extends Service implements OnInitListener {
                     if (utteranceId.equals("FINISHED PLAYING")) {
                         mTts.stop();
                         setFimFala(true);
-                        if ((audioManager.isBluetoothA2dpOn()) || (audioManager.isBluetoothScoAvailableOffCall())) {
-                            audioManager.setBluetoothScoOn(false);
-                            audioManager.stopBluetoothSco();
-                            audioManager.setSpeakerphoneOn(true);
-                        }
+                        //controleAudioManager(0, mSpeaker, mAudioManagerStream);
                         audioManager.setStreamMute(AudioManager.STREAM_MUSIC, false);
                     }
                 }
@@ -117,7 +108,7 @@ public class Speech extends Service implements OnInitListener {
             if (result == TextToSpeech.LANG_MISSING_DATA ||
                     result == TextToSpeech.LANG_NOT_SUPPORTED) {
                 Log.v(TAG, "Language is not available.");
-            } else sayIt(str, TextToSpeech.QUEUE_FLUSH);
+            } else sayIt(str, TextToSpeech.QUEUE_FLUSH, false);
         } else
             Log.v(TAG, "Could not initialize TextToSpeech.");
     }
@@ -134,32 +125,33 @@ public class Speech extends Service implements OnInitListener {
         }
     }
 
-    public void sayIt(String str, int modo) {
-        HashMap<String, String> myHashAlarm = new HashMap<String, String>();
-        myHashAlarm.put(TextToSpeech.Engine.KEY_PARAM_STREAM, String.valueOf(audioManagerMode));
-        myHashAlarm.put(TextToSpeech.Engine.KEY_PARAM_UTTERANCE_ID, "FINISHED PLAYING");
+    public void sayIt(String str, int mAudioManagerStream, boolean mSpeaker  ) {
 
-        controleAudioManager(0);
+        HashMap<String, String> myHashAlarm = new HashMap<String, String>();
+        myHashAlarm.put(TextToSpeech.Engine.KEY_PARAM_STREAM, String.valueOf(mAudioManagerStream));
+        myHashAlarm.put(TextToSpeech.Engine.KEY_PARAM_UTTERANCE_ID, "FINISHED PLAYING");
+        int modo = TextToSpeech.QUEUE_ADD;
+
+        controleAudioManager(0, mSpeaker, mAudioManagerStream);
         this.setFimFala(false);
         mTts.speak(str, modo, myHashAlarm);
     }
 
-	/*public void saySilence(long tempo) {
+	/*public void saySilence(long tempo, int mAudioManagerStream) {
 		HashMap<String, String> myHashAlarm = new HashMap<String, String>();
-		myHashAlarm.put(TextToSpeech.Engine.KEY_PARAM_STREAM, String.valueOf(audioManagerMode));
+		myHashAlarm.put(TextToSpeech.Engine.KEY_PARAM_STREAM, String.valueOf(mAudioManagerStream));
 		myHashAlarm.put(TextToSpeech.Engine.KEY_PARAM_UTTERANCE_ID, "FINISHED PLAYING");
     	this.setFimFala(false);
 		mTts.playSilence(tempo, TextToSpeech.QUEUE_ADD, myHashAlarm) ;
 	}*/
 
-    private void genTone() {
-        // fill out the array
+    private byte[] genTone(float mFreqOfTone, int mNumSamples) {
 
-        final SharedPreferences sharedPreferences = VarioUtil.getSharedPreferences(getApplicationContext());
-        freqOfTone = Float.parseFloat(sharedPreferences.getString("freqTomRadioEdit", Float.toString(freqOfTone)));
+        double sample[] = new double[mNumSamples];
+        byte generatedSnd[] = new byte[2 * mNumSamples];
 
-        for (int i = 0; i < numSamples; ++i) {
-            sample[i] = Math.sin(2 * Math.PI * i / (sampleRate / freqOfTone));
+        for (int i = 0; i < mNumSamples; ++i) {
+            sample[i] = Math.sin(2 * Math.PI * i / (sampleRate / mFreqOfTone));
         }
 
         // convert to 16 bit pcm sound array
@@ -170,65 +162,60 @@ public class Speech extends Service implements OnInitListener {
             generatedSnd[idx++] = (byte) (val & 0x00ff);
             generatedSnd[idx++] = (byte) ((val & 0xff00) >>> 8);
         }
+        return generatedSnd;
     }
 
-    private void playTone() {
+    private void playTone(byte mGeneratedSnd[], int mAudioManagerStream ) {
 
-        if (controleAudioManager(0)) { //verifica se pegou focus
+       // if (controleAudioManager(0)) { //verifica se pegou focus
             try {
                 if (audioTrack == null) {
-                    audioTrack = new AudioTrack(audioManagerMode,
+                    audioTrack = new AudioTrack(mAudioManagerStream,
                             sampleRate, AudioFormat.CHANNEL_OUT_MONO,
-                            AudioFormat.ENCODING_PCM_16BIT, generatedSnd.length,
+                            AudioFormat.ENCODING_PCM_16BIT, mGeneratedSnd.length,
                             AudioTrack.MODE_STREAM);
                 }
-                /*audioTrack.setNotificationMarkerPosition(numSamples);
-                audioTrack.setPlaybackPositionUpdateListener(new AudioTrack.OnPlaybackPositionUpdateListener() {
-                    @Override
-                    public void onPeriodicNotification(AudioTrack track) {
-                        // nothing to do
-                    }
-
-                    @Override
-                    public void onMarkerReached(AudioTrack track) {
-                       if(!tomContinuo){
-                        controleAudioManager(1);
-                        setFimFala(true);
-                      }
-                    }
-                });*/
-
                 this.setFimFala(false);
-                //audioTrack.write(generatedSnd, 0, generatedSnd.length);     // Load the track
                 audioTrack.play();                             // Play the track
                 while(tomContinuo){
-                    audioTrack.write(generatedSnd, 0, generatedSnd.length);     // Load the track
+                    audioTrack.write(mGeneratedSnd, 0, mGeneratedSnd.length);     // Load the track
                 }
                 setFimFala(true);
-                controleAudioManager(1);
+                //controleAudioManager(1);
+
             } catch (Exception e) {
                 Log.v(TAG, "Erro playing tone:" + e.toString());
             }
-        }
+        //}
     }
 
-    public void gerarTom() {
-           genTone();
-           playTone();
+    public void gerarTom(int mAudioManagerStream, boolean mSpeaker) {
+
+        int duration = 1; // miliseconds
+        int numSamples = duration * sampleRate;
+        float freqOfTone = 19000; // hz
+
+        final SharedPreferences sharedPreferences = VarioUtil.getSharedPreferences(getApplicationContext());
+        freqOfTone = Float.parseFloat(sharedPreferences.getString("freqTomRadioEdit", Float.toString(freqOfTone)));
+        if (controleAudioManager(0, mSpeaker, mAudioManagerStream)){
+            playTone(genTone(freqOfTone, numSamples), mAudioManagerStream);
+            controleAudioManager(1, mSpeaker, mAudioManagerStream);
+            sayIt("  Róger",AudioManager.STREAM_NOTIFICATION, false);
+    }
     }
 
-    private boolean controleAudioManager(int controle) {
+    private boolean controleAudioManager(int controle, boolean mSpeaker, int mAudiomanagerStream ) {
         boolean resultado = true;
         switch (controle) {
             case 0: // entrada para falar algo
                 audioManager.setStreamMute(AudioManager.STREAM_MUSIC, true); // diminuir ou para media
                 if (audioManager.isBluetoothA2dpOn()) { // verificar se esta setado o direcionamento entre speaker ou BTH
-                    if (paraBluetooth) {
+                    if (mSpeaker) {
                         audioManager.setBluetoothScoOn(true);
-                        //audioManager.setSpeakerphoneOn(true);
                         try {
-                            Class audioSystemClass = Class.forName("android.media.AudioSystem");
-                            Method setForceUse = audioSystemClass.getMethod("setForceUse", int.class, int.class);
+                            //audioManager.setStreamVolume(mAudiomanagerStream, audioManager.getStreamMaxVolume(mAudiomanagerStream),0);
+                            //Class audioSystemClass = Class.forName("android.media.AudioSystem");
+                            //Method setForceUse = audioSystemClass.getMethod("setForceUse", int.class, int.class);
                                 // First 1 == FOR_MEDIA, second 1 == FORCE_SPEAKER. To go back to the default
                                 // behavior, use FORCE_NONE (0).
                               /* FORCE_NONE = 0;
@@ -245,9 +232,9 @@ public class Speech extends Service implements OnInitListener {
                                  FORCE_SYSTEM_ENFORCED = 11;
                                  FORCE_HDMI_SYSTEM_AUDIO_ENFORCED = 12;
                                  NUM_FORCE_CONFIG = 13; */
-                            setForceUse.invoke(null, 1, 1);
+                            //setForceUse.invoke(null, 1, 1);
                         } catch (Exception ex) {
-
+                            resultado = false;
                         }
                     }
                 }
@@ -256,13 +243,12 @@ public class Speech extends Service implements OnInitListener {
             case 1: // saida após falar algo
                 if (audioManager.isBluetoothA2dpOn()) { // verificar se esta setado o direcionamento entre speaker ou BTH
                     try {
-                        Class audioSystemClass = Class.forName("android.media.AudioSystem");
-                        Method setForceUse = audioSystemClass.getMethod("setForceUse", int.class, int.class);
-                        setForceUse.invoke(null, 1, 0);
+                        //Class audioSystemClass = Class.forName("android.media.AudioSystem");
+                        //Method setForceUse = audioSystemClass.getMethod("setForceUse", int.class, int.class);
+                        //setForceUse.invoke(null, 1, 0);
                         audioManager.setBluetoothScoOn(false);
-                        //audioManager.stopBluetoothSco();
                     } catch (Exception ex) {
-
+                        resultado = false;
                     }
                 }
                 audioManager.setStreamMute(AudioManager.STREAM_MUSIC, false);  // aumentar ou prosseguir media

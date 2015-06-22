@@ -13,7 +13,6 @@ import android.media.AudioManager;
 import android.os.IBinder;
 import android.os.Messenger;
 import android.os.RemoteException;
-import android.speech.tts.TextToSpeech;
 import android.util.Log;
 
 import java.util.ArrayList;
@@ -237,24 +236,15 @@ public class VarioService extends Service implements VarioIfc
 
     public void fala(final int modo)
     {
+        Thread.currentThread().interrupt();
+
         if (modo==-1){
             Speech.tomContinuo = false;
-            return;
-        }
-
-        //final Handler handler=new Handler();
-        boolean mFimFala = mSpeech.isFimFala();
-
-        //if((mSpeech != null) && (mFimFala))
-        if((mFimFala))
+        }else if(mSpeech.isFimFala())
         {
             final Thread background = new Thread(new Runnable() {
                 public void run() {
-                   // handler.post(new Runnable() {
-                       // public void run() {
-                            mFala(modo);
-                       // }
-                //});
+                    mFala(modo);
                 }
             });
             background.start();
@@ -293,18 +283,16 @@ public class VarioService extends Service implements VarioIfc
                     texto.append(", , Descendo a ").append(v).append(" metros por segundo.");
 
                 try {
-                    mSpeech.setParaBluetooth(false);
-                    mSpeech.setAudioManagerMode(AudioManager.STREAM_NOTIFICATION);
-                    mSpeech.sayIt(texto.toString(), TextToSpeech.QUEUE_ADD);
+                    //mSpeech.setAudioManagerMode();
+                    mSpeech.sayIt(texto.toString(),AudioManager.STREAM_NOTIFICATION, false); // (TEXTO DA FALA,
                 } catch (Throwable t) {
                     Log.i(TAG, "SayIt error.");
                 }
             } else  if (modo == 1) {
                 try {
-                    mSpeech.setAudioManagerMode(AudioManager.STREAM_NOTIFICATION);
-                    mSpeech.setParaBluetooth(true);
+                    //mSpeech.setAudioManagerMode(AudioManager.STREAM_NOTIFICATION);
                     Speech.tomContinuo = true;
-                    mSpeech.gerarTom();
+                    mSpeech.gerarTom(AudioManager.STREAM_NOTIFICATION, true);
                 } catch (Throwable t) {
                     Log.i(TAG, "GerarTom error.");
                 }

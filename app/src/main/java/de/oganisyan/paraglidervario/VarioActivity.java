@@ -456,19 +456,19 @@ public class VarioActivity extends Activity implements VarioIfc
 				else if (codTecla.equals("24")){
 					if (flag){
 						flag = false;
-						this.iServiceController.fala(Speech.tom); // Tom
+						this.iServiceController.fala(Speech.FALA_TOM); // Tom
 					}
 					return true;
 				}
 			}
 			else if ((this.iServiceController != null) && (event.getAction()== KeyEvent.ACTION_UP)) {
 				if (codTecla.equals("66")) {
-					this.iServiceController.fala(Speech.dadosVoo); // SayIt
+					this.iServiceController.fala(Speech.FALA_DADOSVOO); // SayIt
 					return true;
 				}
 				else if (codTecla.equals("24"))
 				{
-					this.iServiceController.fala(-1); // desliga tom
+					this.iServiceController.fala(Speech.FALA_PARATOM); // desliga tom
 					flag=true;
 					return true;
 				}
